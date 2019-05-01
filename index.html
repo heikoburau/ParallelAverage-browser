@@ -1,0 +1,118 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <title>ParallelAverage-viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="packages/vue.min.js"></script>
+  <link href="packages/bootstrap.min.css" rel="stylesheet">
+  <link href="index.css" rel="stylesheet">
+
+  <script type="text/x-template" id="job-item-template" class="card">
+    <div class="card-body">
+      <h6 class="card-title">{{ job.job_name }}</h6>
+      <div class="card-text">
+        <div v-if="job.args.length">
+          <ul class="list-inline">
+            <li 
+              v-for="(arg, i) in job.args" 
+              @click="$emit('toggle_arg', i, job.args)"
+              :class="
+                'list-inline-item badge cursor-pointer ' +
+                (args_filter.length > i && objects_equal(args_filter[i], arg) ? 'badge-warning' : 'badge-dark')
+              "
+            >
+              {{ JSON.stringify(arg) }}
+            </li>
+          </ul>
+          <hr v-if="job.args.length && job.kwargs" />
+        </div>
+        <div v-if="job.kwargs">
+          <ul class="list-inline">
+            <li 
+              v-for="(value, name) in job.kwargs"
+              @click="$emit('toggle_kwarg', name, value)"
+              :class="
+                'list-inline-item badge cursor-pointer ' + 
+                (kwargs_filter.hasOwnProperty(name) && objects_equal(kwargs_filter[name], value) ? 'badge-warning' : 'badge-dark')
+              "
+            >
+              {{ name }} = {{ JSON.stringify(value) }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </script>
+
+</head>
+<body>
+
+<div id="app" class="container">
+  <h2 id="title">ParallelAverage-viewer</h2>
+
+  <div class="row">
+    <div class="col-sm">
+      <input id="file-input" type="file" style="display: none;" />
+      <button type="button" @click="load_database" class="btn btn-primary">Load database</button>
+
+      <!-- <button type="button" v-if="database" id="reload-button" class="btn"><img src="img/round-loop.svg"></button> -->
+    </div>
+  </div>
+
+  <div class="row filter-container" v-if="database">
+    <div class="col-sm-4">
+      <ul class="list-group">
+        <li v-for="function_name in function_names" 
+          @click="select_function(function_name)"
+          :class="'list-group-item list-group-item-action function-name-item ' + ((function_name === selected_function) ? 'active' : '')"
+        >
+          {{ function_name }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-sm-5">
+      <form>
+        <div class="form-group">
+          <label for="args" class="font-weight-bold">arguments:</label>
+          <input 
+            type="text" 
+            id="args" 
+            v-model="args_filter" 
+            :class="'form-control ' + (args_filter ? (cleaned_args_filter.length ? 'is-valid' : 'is-invalid') : '')" 
+            placeholder="[1, true]"
+          ></input>
+        </div>
+        <div class="form-group">
+          <label for="kwargs" class="font-weight-bold">keyword-arguments:</label>
+          <input 
+            type="text" 
+            id="kwargs" 
+            v-model="kwargs_filter" 
+            :class="'form-control ' + (kwargs_filter ? (kwargs_filter_is_valid ? 'is-valid' : 'is-invalid') : '')" 
+            placeholder='{"N": 10, "strength": 1.5}'
+          ></input>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <job-item 
+      v-if="database"
+      v-for="job in visible_jobs"
+      v-bind:job="job"
+      v-bind:args_filter="cleaned_args_filter"
+      v-bind:kwargs_filter="cleaned_kwargs_filter"
+      v-bind:key="job.job_name"
+      @toggle_arg="toggle_arg"
+      @toggle_kwarg="toggle_kwarg"
+    ></job-item>
+  </div>
+</div>
+
+<script src="index.js"></script>
+
+</body>
+</html>

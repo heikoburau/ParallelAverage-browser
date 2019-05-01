@@ -1,0 +1,38 @@
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.function-name-item {
+  padding: 0.3rem 1.25rem;
+  margin-bottom: 0rem;
+  line-height: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.card-body {
+  flex: 1 1 60%;
+  padding: 0.75rem;
+  margin: 0.5rem;
+  background-color: #fffcb3;
+}
+
+hr {
+  margin: 0.2rem;
+}
+
+.filter-container {
+  /* border: 0.3rem outset lightgray; */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+#title {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+#reload-button {
+  background-color: #ffc107
+}
