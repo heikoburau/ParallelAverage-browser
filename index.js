@@ -19,9 +19,14 @@ var app = new Vue({
     kwargs_filter: ""
   },
   computed: {
+    rendered_args_filter: function() {
+      return this.args_filter.split(",").map(
+        el => ["*", "[*", "*]", "[*]"].includes(el.trim()) ? el.replace("*", `"${symbol_any}"`) : el
+      ).join(",");
+    },
     cleaned_args_filter: function() {
       try {
-        return JSON.parse(this.args_filter);
+        return JSON.parse(this.rendered_args_filter);
       } catch (e) {
         return [];
       }
@@ -58,7 +63,7 @@ var app = new Vue({
         result = result.filter(job => job.function_name.includes(this.selected_function));
       }
       if(this.cleaned_args_filter) {
-        result = result.filter(job => list_starts_with_other_list(job.args, this.cleaned_args_filter));
+        result = result.filter(job => array_starts_with_other_array(job.args, this.cleaned_args_filter));
       }
       if(this.cleaned_kwargs_filter) {
         result = result.filter(job => object_contains_other_object(job.kwargs, this.cleaned_kwargs_filter));
@@ -90,47 +95,55 @@ var app = new Vue({
       }
       this.selected_function = name;
     },
+    update_args_filter: function(arr) {
+      this.args_filter = JSON.stringify(arr).replace(`"${symbol_any}"`, "*");
+    },
+    clear_arg: function(position) {
+      if(position == this.cleaned_args_filter.length - 1) {
+        this.cleaned_args_filter.pop();
+      } else {
+        this.cleaned_args_filter[position] = symbol_any;
+      }
+      this.update_args_filter(this.cleaned_args_filter);
+    },
+    set_arg: function(position, value) {
+      if(position >= this.cleaned_args_filter.length) {
+        this.update_args_filter(
+          [].concat(this.cleaned_args_filter, new Array(position - this.cleaned_args_filter.length).fill(symbol_any), [value])
+        );
+      } else {
+        this.cleaned_args_filter[position] = value;
+        this.update_args_filter(this.cleaned_args_filter);
+      }
+    },
     toggle_arg: function(i, job_args) {
-      try {
-        args_filter_list = JSON.parse(this.args_filter);
-      } catch(e) {
-        args_filter_list = {}
+      if(i < this.cleaned_args_filter.length && objects_equal(this.cleaned_args_filter[i], job_args[i])) {
+        this.clear_arg(i);
+      } else {
+        this.set_arg(i, job_args[i]);
       }
-
-      if(this.cleaned_args_filter.length > i && objects_equal(this.cleaned_args_filter[i], job_args[i])) {
-        args_filter_list = args_filter_list.slice(0, i);
-        this.args_filter = JSON.stringify(args_filter_list);
-        return;
-      }
-
-      this.args_filter = JSON.stringify(job_args.slice(0, i + 1));
     },
     toggle_kwarg: function(name, value) {
       if(this.kwargs_filter_begin_edited) {
         return;
       }
 
-      try {
-        kwargs_filter_obj = JSON.parse(this.kwargs_filter);
-      } catch(e) {
-        kwargs_filter_obj = {}
-      }
       if(
-        kwargs_filter_obj.hasOwnProperty(name) && 
-        objects_equal(kwargs_filter_obj[name], value)
+        this.cleaned_kwargs_filter.hasOwnProperty(name) && 
+        objects_equal(this.cleaned_kwargs_filter[name], value)
       ) {
-        delete kwargs_filter_obj[name];
+        delete this.cleaned_kwargs_filter[name];
       } else {
-        kwargs_filter_obj[name] = value;
+        this.cleaned_kwargs_filter[name] = value;
       }
 
-      this.kwargs_filter = JSON.stringify(kwargs_filter_obj);
+      this.kwargs_filter = JSON.stringify(this.cleaned_kwargs_filter);
     }
   },
 })
 
 
-function list_starts_with_other_list(a, b) {
+function array_starts_with_other_array(a, b) {
   if(!Array.isArray(a) || !Array.isArray(b)) {
     return false;
   }
@@ -138,12 +151,20 @@ function list_starts_with_other_list(a, b) {
     return false;
   }
 
-  return objects_equal(a.slice(0, b.length), b);
+  for(var i = 0; i < b.length; i++) {
+    if(b[i] == symbol_any) {
+      continue;
+    }
+    if(!objects_equal(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 
 function object_contains_other_object(a, b) {
-  a_sub = {}
+  var a_sub = {}
   for(attr in b) {
     if(a.hasOwnProperty(attr))  {
       a_sub[attr] = a[attr];
@@ -159,3 +180,6 @@ function object_contains_other_object(a, b) {
 function objects_equal(a, b) {
   return JSON.stringify(a) == JSON.stringify(b);
 }
+
+
+symbol_any = "#_any_#"
