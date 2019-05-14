@@ -3,11 +3,19 @@
 }
 
 .function-name-item {
+  display: flex;
+  justify-content: space-between;
   padding: 0.3rem 1.25rem;
   margin-bottom: 0rem;
   line-height: 0.9rem;
   font-weight: 500;
   cursor: pointer;
+}
+
+.function-name-count {
+  font-size: 90%;
+  font-weight: 400;
+  color: darkslategray;
 }
 
 .card-body {

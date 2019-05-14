@@ -67,7 +67,10 @@
           @click="select_function(function_name)"
           :class="'list-group-item list-group-item-action function-name-item ' + ((function_name === selected_function) ? 'active' : '')"
         >
-          {{ function_name }}
+          <span>{{ function_name }}</span>
+          <span class="function-name-count">
+            {{ function_names_count[function_name] ? function_names_count[function_name] : "" }}
+          </span>
         </li>
       </ul>
     </div>

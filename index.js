@@ -68,6 +68,16 @@ var app = new Vue({
 
       return result;
     },
+    function_names_count: function() {
+      var result = {};
+      const prefiltered_jobs = this.filter_jobs(
+        undefined, this.cleaned_args_filter, this.cleaned_kwargs_filter
+      );
+      this.function_names.forEach(name => {
+        result[name] = prefiltered_jobs.filter(job => job.job_name.includes(name)).length;
+      });
+      return result;
+    },
     visible_jobs: function() {
       return this.filter_jobs(this.selected_function, this.cleaned_args_filter, this.cleaned_kwargs_filter);
     },
