@@ -4,9 +4,9 @@
   <title>ParallelAverage-viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <script src="packages/vue.min.js"></script>
   <link href="packages/bootstrap.min.css" rel="stylesheet">
   <link href="index.css" rel="stylesheet">
+  <script src="packages/vue.min.js"></script>
 
   <script type="text/x-template" id="job-item-template" class="card">
     <div class="card-body">
@@ -30,14 +30,14 @@
         <div v-if="job.kwargs">
           <ul class="list-inline">
             <li 
-              v-for="(value, name) in job.kwargs"
-              @click="$emit('toggle_kwarg', name, value)"
+              v-for="(value_str, name) in job.kwargs_str"
+              @click="$emit('toggle_kwarg', name, value_str)"
               :class="
                 'list-inline-item badge cursor-pointer ' + 
-                (kwargs_filter.hasOwnProperty(name) && objects_equal(kwargs_filter[name], value) ? 'badge-warning' : 'badge-dark')
+                (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : 'badge-dark')
               "
             >
-              {{ name }} = {{ JSON.stringify(value) }}
+              {{ name }} = {{ value_str }}
             </li>
           </ul>
         </div>
@@ -95,6 +95,28 @@
           ></input>
         </div>
       </form>
+
+      <div v-for="(values, name) in all_kwargs_value_counts">
+        <ul class="list-inline">
+          <li v-for="(count, value_str) in values"
+            @click="toggle_kwarg(name, value_str)"
+            class="list-inline-item"
+          >
+            <div
+              :class="
+                'badge cursor-pointer ' + 
+                (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : 'badge-dark')
+              "
+            >
+              {{ name }} = {{ value_str }}
+            </div>
+            <br> 
+            <div class="item_count_badge">
+              {{ count }}
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -104,7 +126,7 @@
       v-for="job in visible_jobs"
       v-bind:job="job"
       v-bind:args_filter="cleaned_args_filter"
-      v-bind:kwargs_filter="cleaned_kwargs_filter"
+      v-bind:kwargs_filter_str="kwargs_filter_str"
       v-bind:key="job.job_name"
       @toggle_arg="toggle_arg"
       @toggle_kwarg="toggle_kwarg"

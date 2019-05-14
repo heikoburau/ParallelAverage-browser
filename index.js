@@ -1,5 +1,5 @@
 Vue.component('job-item', {
-  props: ["job", "args_filter", "kwargs_filter"],
+  props: ["job", "args_filter", "kwargs_filter_str"],
   template: "#job-item-template",
   methods: {
     objects_equal: function(a, b) {
@@ -38,6 +38,9 @@ var app = new Vue({
         return {};
       }
     },
+    kwargs_filter_str: function() {
+      return stringify_object(this.cleaned_kwargs_filter);
+    },
     kwargs_filter_is_valid: function() {
       return Object.keys(this.cleaned_kwargs_filter).length
     },
@@ -54,7 +57,7 @@ var app = new Vue({
         return [];
       }
     },
-    visible_jobs: function() {
+    function_name_matching_jobs: function() {
       if(!this.database) {
         return [];
       }
@@ -62,13 +65,38 @@ var app = new Vue({
       if(this.selected_function) {
         result = result.filter(job => job.function_name.includes(this.selected_function));
       }
-      if(this.cleaned_args_filter) {
-        result = result.filter(job => array_starts_with_other_array(job.args, this.cleaned_args_filter));
-      }
-      if(this.cleaned_kwargs_filter) {
-        result = result.filter(job => object_contains_other_object(job.kwargs, this.cleaned_kwargs_filter));
-      }
 
+      return result;
+    },
+    visible_jobs: function() {
+      return this.filter_jobs(this.selected_function, this.cleaned_args_filter, this.cleaned_kwargs_filter);
+    },
+    all_kwargs_values_str: function() {
+      var result = {};
+      for(const name in this.kwargs_filter_str) {
+        result[name] = Array.from(new Set(this.function_name_matching_jobs.filter(
+          job => job.kwargs.hasOwnProperty(name)
+        ).map(
+          job => job.kwargs_str[name]
+        ))).sort();
+      }
+      return result;
+    },
+    all_kwargs_value_counts: function() {
+      var result = {};
+      for(const name in this.all_kwargs_values_str) {
+        result[name] = {};
+        this.all_kwargs_values_str[name].forEach(value_str => {
+          const prefiltered_jobs = this.filter_jobs(
+            this.selected_function, 
+            this.cleaned_args_filter, 
+            remove_key_from_object(name, this.cleaned_kwargs_filter)
+          );
+          result[name][value_str] = prefiltered_jobs.filter(
+            job => job.kwargs.hasOwnProperty(name) && job.kwargs_str[name] == value_str
+          ).length
+        });
+      }
       return result;
     }
   },
@@ -83,7 +111,10 @@ var app = new Vue({
         reader.onload = readerEvent => {
           var content = readerEvent.target.result; // this is the content!
           this.database = JSON.parse(content);
-        }
+          this.database.forEach(job => {
+            job.kwargs_str = stringify_object(job.kwargs);
+          });
+        };
 
         reader.readAsText(this.file, 'UTF-8');
       }
@@ -123,21 +154,38 @@ var app = new Vue({
         this.set_arg(i, job_args[i]);
       }
     },
-    toggle_kwarg: function(name, value) {
+    toggle_kwarg: function(name, value_str) {
       if(this.kwargs_filter_begin_edited) {
         return;
       }
 
       if(
-        this.cleaned_kwargs_filter.hasOwnProperty(name) && 
-        objects_equal(this.cleaned_kwargs_filter[name], value)
+        this.kwargs_filter_str.hasOwnProperty(name) && 
+        this.kwargs_filter_str[name] == value_str
       ) {
         delete this.cleaned_kwargs_filter[name];
       } else {
-        this.cleaned_kwargs_filter[name] = value;
+        this.cleaned_kwargs_filter[name] = JSON.parse(value_str);
       }
 
       this.kwargs_filter = JSON.stringify(this.cleaned_kwargs_filter);
+    },
+    filter_jobs: function (function_name, args_filter, kwargs_filter) {
+      if(!this.database) {
+        return [];
+      }
+      var result = this.database;
+      if(function_name) {
+        result = result.filter(job => job.function_name.includes(function_name));
+      }
+      if(args_filter) {
+        result = result.filter(job => array_starts_with_other_array(job.args, args_filter));
+      }
+      if(kwargs_filter) {
+        result = result.filter(job => object_contains_other_object(job.kwargs, kwargs_filter));
+      }
+
+      return result;
     }
   },
 })
@@ -179,6 +227,26 @@ function object_contains_other_object(a, b) {
 
 function objects_equal(a, b) {
   return JSON.stringify(a) == JSON.stringify(b);
+}
+
+
+function stringify_object(obj) {
+  var result = {};
+  for(const name in obj) {
+    result[name] = JSON.stringify(obj[name]);
+  }
+  return result;
+}
+
+
+function remove_key_from_object(key, obj) {
+  var result = {};
+  for(const name in obj) {
+    if(name != key) {
+      result[name] = obj[name];
+    }
+  }
+  return result;
 }
 
 

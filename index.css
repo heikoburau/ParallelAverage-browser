@@ -29,6 +29,13 @@ hr {
   padding: 1rem;
 }
 
+.item_count_badge {
+  text-align: center;
+  font-size: 75%;
+  font-weight: 400;
+  color: darkslategray;
+}
+
 #title {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
