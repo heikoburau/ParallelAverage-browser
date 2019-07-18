@@ -12,6 +12,12 @@
   cursor: pointer;
 }
 
+.job-item-title-area {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
 .function-name-count {
   font-size: 90%;
   font-weight: 400;

@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>ParallelAverage-viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
 
   <link href="packages/bootstrap.min.css" rel="stylesheet">
   <link href="index.css" rel="stylesheet">
@@ -10,7 +10,10 @@
 
   <script type="text/x-template" id="job-item-template" class="card">
     <div class="card-body">
-      <h6 class="card-title">{{ job.job_name }}</h6>
+      <div class="job-item-title-area">
+        <h6 class="card-title">{{ job.job_name }}</h6>
+        <span class="badge badge-light" title="number of runs">{{ job.N_runs }}</span>
+      </div>
       <div class="card-text">
         <div v-if="job.args.length">
           <ul class="list-inline">
