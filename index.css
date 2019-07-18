@@ -32,8 +32,22 @@
   box-shadow: 0.1rem 0.1rem 0.1rem gray;
 }
 
+footer {
+  text-align: right;
+  font-size: 75%;
+  font-weight: 500;
+}
+
+#job-item-datetime {
+  color: #111;
+}
+
 hr {
   margin: 0.2rem;
+}
+
+ul {
+  margin-bottom: 0;
 }
 
 .filter-container {

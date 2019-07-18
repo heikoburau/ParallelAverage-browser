@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
 
   <link href="packages/bootstrap.min.css" rel="stylesheet">
-  <link href="index.css" rel="stylesheet">
+  <link href="packages/vue2-timeago.css" rel="stylesheet">
   <script src="packages/vue.min.js"></script>
+  <script src="packages/vue2-timeago.js"></script>
+  <link href="index.css" rel="stylesheet">
 
   <script type="text/x-template" id="job-item-template" class="card">
     <div class="card-body">
@@ -45,6 +47,9 @@
           </ul>
         </div>
       </div>
+      <footer>
+        <time-ago :datetime="job.datetime" id="job-item-datetime" long tooltip="top"></time-ago>
+      </footer>
     </div>
   </script>
 

@@ -123,6 +123,9 @@ var app = new Vue({
           this.database = JSON.parse(content);
           this.database.forEach(job => {
             job.kwargs_str = stringify_object(job.kwargs);
+            if(job.hasOwnProperty("datetime")) {
+              job.datetime = Date.parse(job.datetime)
+            }
           });
         };
 
