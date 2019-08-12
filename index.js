@@ -127,6 +127,7 @@ var app = new Vue({
               job.datetime = Date.parse(job.datetime)
             }
           });
+          this.database.reverse();
         };
 
         reader.readAsText(this.file, 'UTF-8');
