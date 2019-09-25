@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
   <title>ParallelAverage-viewer</title>
@@ -19,8 +19,8 @@
       <div class="card-text">
         <div v-if="job.args.length">
           <ul class="list-inline">
-            <li 
-              v-for="(arg, i) in job.args" 
+            <li
+              v-for="(arg, i) in job.args"
               @click="$emit('toggle_arg', i, job.args)"
               :class="
                 'list-inline-item badge cursor-pointer ' +
@@ -34,11 +34,11 @@
         </div>
         <div v-if="job.kwargs">
           <ul class="list-inline">
-            <li 
+            <li
               v-for="(value_str, name) in job.kwargs_str"
               @click="$emit('toggle_kwarg', name, value_str)"
               :class="
-                'list-inline-item badge cursor-pointer ' + 
+                'list-inline-item badge cursor-pointer ' +
                 (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : 'badge-dark')
               "
             >
@@ -69,11 +69,11 @@
   <div class="row filter-container" v-if="database">
     <div class="col-sm-4">
       <ul class="list-group">
-        <li v-for="function_name in function_names" 
+        <li v-for="function_name in function_names"
           @click="select_function(function_name)"
           :class="'list-group-item list-group-item-action function-name-item ' + ((function_name === selected_function) ? 'active' : '')"
         >
-          <span>{{ function_name }}</span>
+          <span class="function-name-string">{{ function_name }}</span>
           <span class="function-name-count">
             {{ function_names_count[function_name] ? function_names_count[function_name] : "" }}
           </span>
@@ -85,21 +85,21 @@
       <form>
         <div class="form-group">
           <label for="args" class="font-weight-bold">arguments:</label>
-          <input 
-            type="text" 
-            id="args" 
-            v-model="args_filter" 
-            :class="'form-control ' + (args_filter ? (cleaned_args_filter.length ? 'is-valid' : 'is-invalid') : '')" 
+          <input
+            type="text"
+            id="args"
+            v-model="args_filter"
+            :class="'form-control ' + (args_filter ? (cleaned_args_filter.length ? 'is-valid' : 'is-invalid') : '')"
             placeholder="[1, *, true]"
           ></input>
         </div>
         <div class="form-group">
           <label for="kwargs" class="font-weight-bold">keyword-arguments:</label>
-          <input 
-            type="text" 
-            id="kwargs" 
-            v-model="kwargs_filter" 
-            :class="'form-control ' + (kwargs_filter ? (kwargs_filter_is_valid ? 'is-valid' : 'is-invalid') : '')" 
+          <input
+            type="text"
+            id="kwargs"
+            v-model="kwargs_filter"
+            :class="'form-control ' + (kwargs_filter ? (kwargs_filter_is_valid ? 'is-valid' : 'is-invalid') : '')"
             placeholder='{"N": 10, "strength": 1.5}'
           ></input>
         </div>
@@ -113,13 +113,13 @@
           >
             <div
               :class="
-                'badge cursor-pointer ' + 
+                'badge cursor-pointer ' +
                 (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : 'badge-dark')
               "
             >
               {{ name }} = {{ value_str }}
             </div>
-            <br> 
+            <br>
             <div class="item_count_badge">
               {{ count }}
             </div>
@@ -130,7 +130,7 @@
   </div>
 
   <div class="row">
-    <job-item 
+    <job-item
       v-if="database"
       v-for="job in visible_jobs"
       v-bind:job="job"

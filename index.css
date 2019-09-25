@@ -4,6 +4,7 @@
 
 .function-name-item {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   padding: 0.3rem 1.25rem;
   margin-bottom: 0rem;
@@ -22,6 +23,11 @@
   font-size: 90%;
   font-weight: 400;
   color: darkslategray;
+}
+
+.function-name-string {
+  max-width: 90%;
+  overflow-wrap: break-word;
 }
 
 .card-body {
