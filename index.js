@@ -145,7 +145,9 @@ var app = new Vue({
               job.datetime = Date.parse(job.datetime)
             }
           });
-          this.database.reverse();
+          this.database.sort((a, b) => {
+            return a.datetime < b.datetime
+          })
         };
 
         reader.readAsText(this.file, 'UTF-8');
