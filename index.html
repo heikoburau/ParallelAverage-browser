@@ -10,6 +10,8 @@
   <script src="packages/vue2-timeago.js"></script>
   <link href="index.css" rel="stylesheet">
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   <script type="text/x-template" id="job-item-template" class="card">
     <div class="card-body">
       <div class="job-item-title-area">
@@ -48,7 +50,15 @@
         </div>
       </div>
       <footer>
-        <time-ago :datetime="job.datetime" id="job-item-datetime" long tooltip="top"></time-ago>
+        <div class="job-item-footer-area">
+          <div>
+            <span v-if="has_warnings">
+              <i class="fa fa-exclamation-triangle" style="font-size:1rem;color:grey;"></i>
+              {{ warning_message }}
+            </span>
+          </div>
+          <time-ago :datetime="job.datetime" id="job-item-datetime" long tooltip="top"></time-ago>
+        </div>
       </footer>
     </div>
   </script>

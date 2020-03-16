@@ -5,6 +5,24 @@ Vue.component('job-item', {
     objects_equal: function(a, b) {
       return objects_equal(a, b);
     }
+  },
+  computed: {
+    has_warnings: function() {
+      return (
+        (this.job.hasOwnProperty("N_failed") && this.job.N_failed > 0) ||
+        (this.job.hasOwnProperty("N_not_ready") && this.job.N_not_ready > 0)
+      )
+    },
+    warning_message: function() {
+      var warnings = []
+      if(this.job.hasOwnProperty("N_failed") && this.job.N_failed > 0) {
+        warnings.push(`${this.job.N_failed} runs failed`)
+      }
+      if(this.job.hasOwnProperty("N_not_ready") && this.job.N_not_ready > 0) {
+       warnings.push(`${this.job.N_not_ready} runs not ready yet`)
+      }
+      return warnings.join(", ")
+    }
   }
 })
 
@@ -98,8 +116,8 @@ var app = new Vue({
         result[name] = {};
         this.all_kwargs_values_str[name].forEach(value_str => {
           const prefiltered_jobs = this.filter_jobs(
-            this.selected_function, 
-            this.cleaned_args_filter, 
+            this.selected_function,
+            this.cleaned_args_filter,
             remove_key_from_object(name, this.cleaned_kwargs_filter)
           );
           result[name][value_str] = prefiltered_jobs.filter(
@@ -117,7 +135,7 @@ var app = new Vue({
       load_database_button.onchange = (e) => {
         this.file = e.target.files[0];
         var reader = new FileReader();
-        
+
         reader.onload = readerEvent => {
           var content = readerEvent.target.result; // this is the content!
           this.database = JSON.parse(content);
@@ -174,7 +192,7 @@ var app = new Vue({
       }
 
       if(
-        this.kwargs_filter_str.hasOwnProperty(name) && 
+        this.kwargs_filter_str.hasOwnProperty(name) &&
         this.kwargs_filter_str[name] == value_str
       ) {
         delete this.cleaned_kwargs_filter[name];

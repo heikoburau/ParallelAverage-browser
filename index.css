@@ -19,6 +19,13 @@
   justify-content: space-between;
 }
 
+.job-item-footer-area {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+
 .function-name-count {
   font-size: 90%;
   font-weight: 400;
