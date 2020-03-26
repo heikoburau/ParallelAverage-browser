@@ -22,6 +22,9 @@ Vue.component('job-item', {
        warnings.push(`${this.job.N_not_ready} runs not ready yet`)
       }
       return warnings.join(", ")
+    },
+    has_completed: function() {
+      return this.job.status === "completed"
     }
   }
 })
