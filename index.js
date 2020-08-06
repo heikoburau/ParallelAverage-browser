@@ -141,6 +141,11 @@ var app = new Vue({
 
         reader.onload = readerEvent => {
           var content = readerEvent.target.result; // this is the content!
+
+          this.selected_function = ""
+          this.args_filter = ""
+          this.kwargs_filter = ""
+          
           this.database = JSON.parse(content);
           this.database.forEach(job => {
             job.kwargs_str = stringify_object(job.kwargs);
