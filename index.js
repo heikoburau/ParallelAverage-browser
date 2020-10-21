@@ -34,6 +34,7 @@ var app = new Vue({
   el: '#app',
   data: {
     file: null,
+    url: "",
     database: null,
     selected_function: "",
     args_filter: "",
@@ -132,6 +133,26 @@ var app = new Vue({
     }
   },
   methods: {
+    load_url: function() {
+      var _this = this;
+      this.database = null;
+
+      this.url = trim_url(this.url);
+
+      var final_url = this.url + "/parallel_average_database.json"
+      if(!final_url.startsWith("https")) {
+        final_url = "http://" + final_url;
+      }
+
+      fetch(final_url).then(function(response) {
+        return response.json();
+      }).then(function(content) {
+        _this.update_database(content);
+      }).catch(function(error) {
+        console.log("Error: " + error);
+      });
+
+    },
     load_database: function() {
       var load_database_button = document.getElementById('file-input');
       load_database_button.click();
@@ -140,26 +161,25 @@ var app = new Vue({
         var reader = new FileReader();
 
         reader.onload = readerEvent => {
-          var content = readerEvent.target.result; // this is the content!
-
-          this.selected_function = ""
-          this.args_filter = ""
-          this.kwargs_filter = ""
-          
-          this.database = JSON.parse(content);
-          this.database.forEach(job => {
-            job.kwargs_str = stringify_object(job.kwargs);
-            if(job.hasOwnProperty("datetime")) {
-              job.datetime = Date.parse(job.datetime)
-            }
-          });
-          this.database.sort((a, b) => {
-            return a.datetime < b.datetime
-          })
+          var content = JSON.parse(readerEvent.target.result);
+          this.update_database(content);
+          this.url = "";
         };
 
         reader.readAsText(this.file, 'UTF-8');
       }
+    },
+    update_database: function(content) {
+      this.database = content;
+      this.database.forEach(job => {
+        job.kwargs_str = stringify_object(job.kwargs);
+        if(job.hasOwnProperty("datetime")) {
+          job.datetime = Date.parse(job.datetime)
+        }
+      });
+      this.database.sort((a, b) => {
+        return a.datetime < b.datetime
+      })
     },
     select_function: function(name) {
       if(name == this.selected_function) {
@@ -289,6 +309,25 @@ function remove_key_from_object(key, obj) {
     }
   }
   return result;
+}
+
+
+function trim_url(url) {
+  var url = url.trim();
+
+  ["http://"].forEach(prefix => {
+    if(url.startsWith(prefix)) {
+      url = url.slice(prefix.length)
+    }
+  });
+
+  ["parallel_average_database.json", "/"].forEach(suffix => {
+    if(url.endsWith(suffix)) {
+      url = url.slice(0, -suffix.length)
+    }
+  });
+
+  return url;
 }
 
 
