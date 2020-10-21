@@ -35,6 +35,7 @@ var app = new Vue({
   data: {
     file: null,
     url: "",
+    url_error_message: "",
     database: null,
     selected_function: "",
     args_filter: "",
@@ -134,7 +135,7 @@ var app = new Vue({
   },
   methods: {
     load_url: function() {
-      var _this = this;
+      this.url_error_message = "";
       this.database = null;
 
       this.url = trim_url(this.url);
@@ -144,13 +145,20 @@ var app = new Vue({
         final_url = "http://" + final_url;
       }
 
-      fetch(final_url).then(function(response) {
-        return response.json();
-      }).then(function(content) {
-        _this.update_database(content);
-      }).catch(function(error) {
-        console.log("Error: " + error);
-      });
+      fetch(final_url).then(response => {
+        if(response.status === 200) {
+          return response.json();
+        } else if(response.status === 404) {
+          this.url_error_message = `Error 404: "${final_url}" was not found!`
+        } else {
+          this.url_error_message = `Error ${response.status}: ${response.statusText}`
+        }
+        throw new Error(response.status)
+      }).then(
+        content => this.update_database(content)
+      ).catch(
+        error => console.log(error)
+      );
 
     },
     load_database: function() {
