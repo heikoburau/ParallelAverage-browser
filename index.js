@@ -19,7 +19,7 @@ Vue.component('job-item', {
         warnings.push(`${this.job.N_failed} runs failed`)
       }
       if(this.job.hasOwnProperty("N_not_ready") && this.job.N_not_ready > 0) {
-       warnings.push(`${this.job.N_not_ready} runs not ready yet`)
+       warnings.push(`${this.job.N_not_ready} runs are not ready yet`)
       }
       return warnings.join(", ")
     },
