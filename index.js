@@ -157,7 +157,11 @@ var app = new Vue({
       }).then(
         content => this.update_database(content)
       ).catch(
-        error => console.log(error)
+        error => {
+          if(!this.url_error_message) {
+            this.url_error_message = "" + error;
+          }
+        }
       );
 
     },
