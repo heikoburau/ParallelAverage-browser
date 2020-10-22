@@ -81,7 +81,7 @@
         placeholder="URL to your database folder"
         v-model="url"
         @keyup.enter="load_url"
-        @focus="if(!url) {url = trim_url(location.origin);}"
+        @focus="if(!url) {url = trim_url(location.origin) + '/';}"
       />
       <div class="input-group-append">
         <button class="btn btn-primary" type="submit" @click="load_url"><i class="fa fa-share"></i></button>
