@@ -75,7 +75,14 @@
 
   <div class="row justify-content-start mb-5">
     <div class="col-sm input-group" >
-      <input type="url" class="form-control" placeholder="URL to your database" v-model="url" @keyup.enter="load_url" />
+      <input
+        type="url"
+        class="form-control"
+        placeholder="URL to your database"
+        v-model="url"
+        @keyup.enter="load_url"
+        @focus="if(!url) {url = trim_url(location.origin);}"
+      />
       <div class="input-group-append">
         <button class="btn btn-primary" type="submit" @click="load_url"><i class="fa fa-share"></i></button>
       </div>
