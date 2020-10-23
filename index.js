@@ -35,6 +35,7 @@ var app = new Vue({
   data: {
     file: null,
     url: "",
+    url_loaded: false,
     url_error_message: "",
     database: null,
     selected_function: "",
@@ -135,6 +136,7 @@ var app = new Vue({
   },
   methods: {
     load_url: function() {
+      this.url_loaded = false;
       this.url_error_message = "";
       this.database = null;
 
@@ -155,7 +157,10 @@ var app = new Vue({
         }
         throw new Error(response.status)
       }).then(
-        content => this.update_database(content)
+        content => {
+          this.update_database(content);
+          this.url_loaded = true;
+        }
       ).catch(
         error => {
           if(!this.url_error_message) {
@@ -176,6 +181,7 @@ var app = new Vue({
           var content = JSON.parse(readerEvent.target.result);
           this.update_database(content);
           this.url = "";
+          this.url_loaded = false;
         };
 
         reader.readAsText(this.file, 'UTF-8');

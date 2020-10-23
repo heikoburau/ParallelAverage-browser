@@ -84,13 +84,17 @@
         @focus="if(!url) {url = trim_url(location.origin) + '/';}"
       />
       <div class="input-group-append">
-        <button class="btn btn-primary" type="submit" @click="load_url"><i class="fa fa-share"></i></button>
+        <button class="btn btn-primary" type="submit" @click="load_url">
+          <i :class="'fa ' + (url_loaded ? 'fa-refresh' : 'fa-share')"></i>
+        </button>
       </div>
     </div>
     <span class="col-sm text-muted text-center" style="align-self: center; flex-grow: unset;">or</span>
     <div class="col-sm">
       <input id="file-input" type="file" accept=".json" style="display: none;" />
-      <button type="button" @click="load_database" class="btn btn-primary">local file <i class="fa fa-upload"></i></button>
+      <button type="button" @click="load_database" class="btn btn-primary">
+        local file <i class="fa fa-upload"></i>
+      </button>
     </div>
   </div>
   <p v-if="url_error_message" class="text-danger">{{ url_error_message }}</p>
