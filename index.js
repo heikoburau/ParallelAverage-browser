@@ -43,6 +43,9 @@ var app = new Vue({
     kwargs_filter: ""
   },
   computed: {
+    within_iframe: function() {
+      return location !== parent.location;
+    },
     rendered_args_filter: function() {
       return this.args_filter.split(",").map(
         el => ["*", "[*", "*]", "[*]"].includes(el.trim()) ? el.replace("*", `"${symbol_any}"`) : el
@@ -147,7 +150,7 @@ var app = new Vue({
         final_url = "http://" + final_url;
       }
 
-      fetch(final_url).then(response => {
+      fetch(final_url, {mode: "cors", credentials: "include"}).then(response => {
         if(response.status === 200) {
           return response.json();
         } else if(response.status === 404) {

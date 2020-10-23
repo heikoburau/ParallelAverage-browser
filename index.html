@@ -73,6 +73,12 @@
 <div id="app" class="container">
   <h2 id="title">ParallelAverage - Explorer</h2>
 
+  <div v-if="within_iframe" class="alert alert-warning" role="alert">
+    Warning: Fetching of remote databases might not work properly, because this webpage seems to be embedded in another one.
+    <br>
+    In case you are connected to a jupyter-notebook server, please replace <span style="font-family: monospace;">/view/</span> by <span style="font-family: monospace;">/files/</span> in the adress bar of your browser and reload this page.
+  </div>
+
   <div class="row justify-content-start mb-5">
     <div class="col-sm input-group" >
       <input
