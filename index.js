@@ -142,7 +142,7 @@ var app = new Vue({
     values_of_all_visible_kwargs: function() {
       var result = {};
       this.visible_jobs.forEach(job => {
-        Object.entries(job.kwargs).forEach(([kwarg, value]) => {
+        Object.entries(job.kwargs_str).forEach(([kwarg, value]) => {
           result[kwarg] = (result[kwarg] ?? []).concat(value);
         })
       })
