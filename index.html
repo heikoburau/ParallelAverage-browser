@@ -45,7 +45,7 @@
               @click="$emit('toggle_kwarg', name, value_str)"
               :class="
                 'list-inline-item badge cursor-pointer ' +
-                (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : 'badge-dark')
+                (kwargs_filter_str.hasOwnProperty(name) && kwargs_filter_str[name] == value_str ? 'badge-warning' : (kwarg_is_unique(name) ? 'badge-secondary' : 'badge-dark'))
               "
             >
               {{ name }} = {{ value_str }}
@@ -173,10 +173,11 @@
     <job-item
       v-if="database"
       v-for="job in visible_jobs"
-      v-bind:job="job"
-      v-bind:args_filter="cleaned_args_filter"
-      v-bind:kwargs_filter_str="kwargs_filter_str"
-      v-bind:key="job.job_name"
+      :job="job"
+      :args_filter="cleaned_args_filter"
+      :kwargs_filter_str="kwargs_filter_str"
+      :value_count_of_all_visible_kwargs="value_count_of_all_visible_kwargs"
+      :key="job.job_name"
       @select_function="select_function"
       @toggle_arg="toggle_arg"
       @toggle_kwarg="toggle_kwarg"
