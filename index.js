@@ -1,19 +1,19 @@
 Vue.component('job-item', {
-  props: ["job", "args_filter", "kwargs_filter_str", "value_count_of_all_visible_kwargs"],
+  props: ["job", "args_filter", "kwargs_filter_str", "unique_values_of_all_visible_kwargs"],
   template: "#job-item-template",
   methods: {
     objects_equal: function(a, b) {
       return objects_equal(a, b);
     },
     kwarg_is_unique(kwarg) {
-      return Object.keys(this.value_count_of_all_visible_kwargs[kwarg]).length == 1;
+      return this.unique_values_of_all_visible_kwargs[kwarg].size == 1;
     }
   },
   computed: {
     has_warnings: function() {
       return (
         (this.job.hasOwnProperty("N_failed") && this.job.N_failed > 0) ||
-        (this.job.hasOwnProperty("N_not_ready") && this.job.N_not_ready > 0)
+        (this.job.hasOwnProperty("N_not_ready") && this.job.N_not_ready > 0) 
       )
     },
     warning_message: function() {
@@ -148,10 +148,10 @@ var app = new Vue({
       })
       return result;
     },
-    value_count_of_all_visible_kwargs: function() {
+    unique_values_of_all_visible_kwargs: function() {
       var result = {};
       Object.entries(this.values_of_all_visible_kwargs).forEach(([kwarg, values]) => {
-        result[kwarg] = countUnique(values);
+        result[kwarg] = new Set(values);
       })
       return result;
     }
@@ -368,14 +368,6 @@ function trim_url(url) {
   });
 
   return url;
-}
-
-function countUnique(arr) {
-  const counts = {};
-  for (var i = 0; i < arr.length; i++) {
-     counts[arr[i]] = 1 + (counts[arr[i]] || 0);
-  };
-  return counts;
 }
 
 symbol_any = "#_any_#"
